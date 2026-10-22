@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Feliz Cumpleaños Diego!</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #68505a;
+            --night: #ffffff;
+            --panel: #fffaf3;
+            --pink: #f49ab5;
+            --pink-dark: #c86f8e;
+            --yellow: #f5cf79;
+            --mint: #b7dfc4;
+            --blue: #b6dced;
+            --white: #fffdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            overflow-x: hidden;
+            padding: 24px 14px;
+            background-color: var(--night);
+            background-image: none;
+            background-size: 53px 53px, 100% 100%;
+            color: var(--ink);
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .game {
+            position: relative;
+            width: min(100%, 460px);
+            padding: 12px;
+            border: 4px solid var(--white);
+            background: var(--panel);
+            box-shadow: 8px 8px 0 #d9b9b0;
+            text-align: center;
+            perspective: 1200px;
+        }
+
+        .card-inner {
+            display: grid;
+            transform-style: preserve-3d;
+            transition: transform 800ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .game.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .screen {
+            grid-area: 1 / 1;
+            padding: clamp(20px, 6vw, 30px) clamp(14px, 5vw, 24px) 24px;
+            border: 3px solid #efd1ca;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.35) 50%, transparent 50%);
+            background-size: 100% 4px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .back-screen {
+            transform: rotateY(180deg);
+        }
+
+        .back-title {
+            margin: 0 0 16px;
+            color: var(--pink-dark);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 #8bc9e8;
+        }
+
+        .back-content {
+            display: grid;
+            gap: 18px;
+        }
+
+        .photo-section,
+        .playlist-section {
+            padding: 14px;
+            border: 2px dashed #e6b7ae;
+            background: #fffdf8;
+        }
+
+        .section-label {
+            margin: 0 0 10px;
+            color: #8a604b;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .photo-frame {
+            position: relative;
+            display: block;
+            width: min(100%, 250px);
+            aspect-ratio: 5 / 3;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 3px solid #a9cfe0;
+            background-color: #eff8fb;
+        }
+
+        .photo-frame img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .spotify-embed {
+            display: block;
+            width: 100%;
+            height: 152px;
+            margin-top: 12px;
+            border: 0;
+            border-radius: 12px;
+            background: #f3eee8;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--pink-dark);
+            font-size: clamp(1.7rem, 7vw, 2.3rem);
+            line-height: 1.2;
+            text-shadow: 3px 3px 0 #8bc9e8;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            margin: 10px 0 0;
+            color: #78656d;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .cake-wrap {
+            position: relative;
+            display: grid;
+            min-height: 240px;
+            place-items: center;
+            margin: 14px 0 4px;
+        }
+
+        .cake {
+            width: min(100%, 270px);
+            height: auto;
+            overflow: visible;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 8px 0 rgba(153, 112, 119, 0.18));
+        }
+
+        .flame {
+            transform-box: fill-box;
+            transform-origin: center bottom;
+            animation: flicker 0.55s steps(2, end) infinite alternate;
+        }
+
+        .flame:nth-of-type(2) {
+            animation-delay: 0.2s;
+        }
+
+        .flame:nth-of-type(3) {
+            animation-delay: 0.35s;
+        }
+
+        .game.is-blown .flame {
+            opacity: 0;
+            transform: translateY(8px) scale(0.2);
+            animation: none;
+            transition: opacity 180ms steps(2, end), transform 180ms steps(2, end);
+        }
+
+        .smoke {
+            opacity: 0;
+        }
+
+        .game.is-blown .smoke {
+            animation: puff 1s steps(4, end) forwards;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .control {
+            min-height: 54px;
+            padding: 10px 8px;
+            border: 3px solid var(--ink);
+            box-shadow: 0 5px 0 var(--ink);
+            color: var(--ink);
+            font-size: 0.78rem;
+            font-weight: 900;
+            line-height: 1.25;
+            text-transform: uppercase;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: transform 100ms steps(2, end), box-shadow 100ms steps(2, end);
+        }
+
+        .control:hover {
+            filter: brightness(1.08);
+        }
+
+        .control:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 var(--ink);
+        }
+
+        .control:focus-visible {
+            outline: 3px dashed var(--white);
+            outline-offset: 5px;
+        }
+
+        .blow-button {
+            background: var(--pink);
+        }
+
+        .song-button {
+            background: var(--mint);
+        }
+
+        .turn-button {
+            width: 100%;
+            margin-top: 12px;
+            background: var(--blue);
+        }
+
+        .status {
+            min-height: 2.8em;
+            margin: 16px 0 0;
+            color: #8a604b;
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .pixel-heart {
+            display: inline-block;
+            margin: 0 4px;
+            color: var(--pink);
+            animation: pulse 1s steps(2, end) infinite;
+        }
+
+        .confetti {
+            position: fixed;
+            z-index: 5;
+            top: -16px;
+            left: var(--x);
+            width: 10px;
+            height: 10px;
+            background: var(--color);
+            pointer-events: none;
+            animation: confetti-fall var(--duration) steps(12, end) var(--delay) forwards;
+        }
+
+        @keyframes flicker {
+            from { transform: scale(1) rotate(-3deg); }
+            to { transform: scale(0.82, 1.12) rotate(3deg); }
+        }
+
+        @keyframes puff {
+            0% { opacity: 0; transform: translateY(8px) scale(0.5); }
+            30% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(-20px) scale(1.25); }
+        }
+
+        @keyframes pulse {
+            50% { transform: scale(1.25); }
+        }
+
+        @keyframes confetti-fall {
+            to { transform: translate(var(--drift), 110vh) rotate(540deg); }
+        }
+
+        @media (max-width: 360px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .cake-wrap {
+                min-height: 210px;
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="game" id="birthdayGame">
+        <div class="card-inner">
+        <section class="screen front-screen" id="frontScreen" aria-labelledby="title">
+            <h1 id="title">Feliz Cumpleaños Diego!</h1>
+            <p class="intro">Con mucho amor, para ti</p>
+
+            <div class="cake-wrap">
+                <svg class="cake" viewBox="0 0 240 210" role="img" aria-label="Pixel-art birthday cake with three lit candles">
+                    <g class="smoke" fill="#ddd5d1">
+                        <rect x="71" y="35" width="8" height="8"/>
+                        <rect x="79" y="27" width="8" height="8"/>
+                        <rect x="87" y="35" width="8" height="8"/>
+                        <rect x="116" y="25" width="8" height="8"/>
+                        <rect x="124" y="17" width="8" height="8"/>
+                        <rect x="132" y="25" width="8" height="8"/>
+                        <rect x="161" y="35" width="8" height="8"/>
+                        <rect x="169" y="27" width="8" height="8"/>
+                        <rect x="177" y="35" width="8" height="8"/>
+                    </g>
+                    <g class="flames">
+                        <path class="flame" fill="#f5a15e" d="M76 55h-8V43h8V31h8v12h8v12h-8v8h-8z"/>
+                        <path class="flame" fill="#f5a15e" d="M121 45h-8V33h8V21h8v12h8v12h-8v8h-8z"/>
+                        <path class="flame" fill="#f5a15e" d="M166 55h-8V43h8V31h8v12h8v12h-8v8h-8z"/>
+                        <rect x="76" y="42" width="8" height="12" fill="#fff0ad"/>
+                        <rect x="121" y="32" width="8" height="12" fill="#fff0ad"/>
+                        <rect x="166" y="42" width="8" height="12" fill="#fff0ad"/>
+                    </g>
+                    <g shape-rendering="crispEdges">
+                        <rect x="72" y="59" width="16" height="52" fill="#b6dced"/>
+                        <rect x="117" y="49" width="16" height="62" fill="#f49ab5"/>
+                        <rect x="162" y="59" width="16" height="52" fill="#b7dfc4"/>
+                        <rect x="48" y="103" width="144" height="28" fill="#ffd2bd"/>
+                        <rect x="40" y="131" width="160" height="42" fill="#d988a0"/>
+                        <rect x="32" y="173" width="176" height="12" fill="#f5cf79"/>
+                        <rect x="32" y="185" width="176" height="10" fill="#c87591"/>
+                        <rect x="53" y="116" width="12" height="8" fill="#fff0ad"/>
+                        <rect x="88" y="116" width="12" height="8" fill="#fff0ad"/>
+                        <rect x="123" y="116" width="12" height="8" fill="#fff0ad"/>
+                        <rect x="158" y="116" width="12" height="8" fill="#fff0ad"/>
+                        <rect x="57" y="143" width="12" height="12" fill="#f5cf79"/>
+                        <rect x="91" y="143" width="12" height="12" fill="#b7dfc4"/>
+                        <rect x="137" y="143" width="12" height="12" fill="#b6dced"/>
+                        <rect x="171" y="143" width="12" height="12" fill="#f5cf79"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="controls">
+                <button class="control blow-button" id="blowButton" type="button">💨 Blow out candles</button>
+                <button class="control song-button" id="songButton" type="button" aria-pressed="false">♫ Play birthday song</button>
+            </div>
+            <button class="control turn-button" type="button" data-flip aria-label="Turn the card over">↻ Turn card over</button>
+
+            <p class="status" id="status" role="status" aria-live="polite">
+                Te admiro <span class="pixel-heart" aria-hidden="true">♥</span> Gracias por todo!
+            </p>
+        </section>
+        <section class="screen back-screen" id="backScreen" aria-labelledby="backTitle" aria-hidden="true" inert>
+            <h2 class="back-title" id="backTitle">A little something for you</h2>
+            <div class="back-content">
+                <section class="photo-section" aria-labelledby="photoLabel">
+                    <h3 class="section-label" id="photoLabel">A favorite memory</h3>
+                    <div class="photo-frame">
+                        <img src="IMG_6058.jpg" alt="A favorite memory with Diego">
+                    </div>
+                </section>
+
+                <section class="playlist-section" aria-labelledby="playlistLabel">
+                    <h3 class="section-label" id="playlistLabel">Spotify playlist</h3>
+                    <iframe
+                        class="spotify-embed"
+                        src="https://open.spotify.com/embed/playlist/4uGkYVzgyX1yghhFUB4vCB?utm_source=generator"
+                        title="Spotify playlist player"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                    ></iframe>
+                </section>
+            </div>
+            <button class="control turn-button" type="button" data-flip aria-label="Turn the card back to the front">↻ Back to birthday card</button>
+        </section>
+        </div>
+    </main>
+
+    <script>
+        const game = document.getElementById('birthdayGame');
+        const blowButton = document.getElementById('blowButton');
+        const songButton = document.getElementById('songButton');
+        const status = document.getElementById('status');
+        const frontScreen = document.getElementById('frontScreen');
+        const backScreen = document.getElementById('backScreen');
+        const melody = [
+            [60, 0.32], [60, 0.32], [62, 0.64], [60, 0.64], [65, 0.64], [64, 1],
+            [60, 0.32], [60, 0.32], [62, 0.64], [60, 0.64], [67, 0.64], [65, 1],
+            [60, 0.32], [60, 0.32], [72, 0.64], [69, 0.64], [65, 0.64], [64, 0.64], [62, 1],
+            [70, 0.32], [70, 0.32], [69, 0.64], [65, 0.64], [67, 0.64], [65, 1]
+        ];
+
+        let audioContext;
+        let songTimers = [];
+        let songPlaying = false;
+
+        document.querySelectorAll('[data-flip]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const isFlipped = game.classList.toggle('is-flipped');
+                frontScreen.inert = isFlipped;
+                frontScreen.setAttribute('aria-hidden', String(isFlipped));
+                backScreen.inert = !isFlipped;
+                backScreen.setAttribute('aria-hidden', String(!isFlipped));
+                (isFlipped ? backScreen : frontScreen).querySelector('[data-flip]')?.focus();
+            });
+        });
+
+        function celebrate() {
+            const colors = ['#f49ab5', '#f5cf79', '#b7dfc4', '#b6dced'];
+
+            for (let i = 0; i < 48; i++) {
+                const piece = document.createElement('span');
+                piece.className = 'confetti';
+                piece.style.setProperty('--x', `${Math.random() * 100}vw`);
+                piece.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+                piece.style.setProperty('--drift', `${(Math.random() - 0.5) * 180}px`);
+                piece.style.setProperty('--duration', `${2.5 + Math.random() * 2}s`);
+                piece.style.setProperty('--delay', `${Math.random() * 0.5}s`);
+                document.body.appendChild(piece);
+                piece.addEventListener('animationend', () => piece.remove(), { once: true });
+            }
+        }
+
+        blowButton.addEventListener('click', () => {
+            if (game.classList.contains('is-blown')) {
+                game.classList.remove('is-blown');
+                blowButton.textContent = 'Blow out candles';
+                status.textContent = 'Candles relit! Make another wish.';
+                return;
+            }
+
+            game.classList.add('is-blown');
+            blowButton.textContent = 'Relight candles';
+            status.textContent = 'Wish granted! Happy Birthday! ★';
+            celebrate();
+        });
+
+        function playNote(midiNote, startTime, duration) {
+            const oscillator = audioContext.createOscillator();
+            const volume = audioContext.createGain();
+            oscillator.type = 'square';
+            oscillator.frequency.value = 440 * (2 ** ((midiNote - 69) / 12));
+            volume.gain.setValueAtTime(0.0001, startTime);
+            volume.gain.exponentialRampToValueAtTime(0.12, startTime + 0.025);
+            volume.gain.setValueAtTime(0.12, startTime + duration * 0.72);
+            volume.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            oscillator.connect(volume);
+            volume.connect(audioContext.destination);
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        }
+
+        async function startSong() {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                status.textContent = 'Audio playback is not supported in this browser.';
+                return;
+            }
+
+            try {
+                audioContext ??= new AudioContextClass();
+                await audioContext.resume();
+                songPlaying = true;
+                songButton.setAttribute('aria-pressed', 'true');
+                songButton.textContent = '■ Stop birthday song';
+                status.textContent = '♪ Happy Birthday to you... ♪';
+
+                let offset = 0;
+                const startTime = audioContext.currentTime + 0.05;
+                melody.forEach(([note, duration]) => {
+                    const noteDuration = duration * 0.88;
+                    playNote(note, startTime + offset, noteDuration);
+                    offset += duration;
+                });
+
+                songTimers.push(setTimeout(() => {
+                    songPlaying = false;
+                    songButton.setAttribute('aria-pressed', 'false');
+                    songButton.textContent = '♫ Play birthday song';
+                    status.textContent = '♪ Song complete! Encore? ♪';
+                    songTimers = [];
+                }, offset * 1000));
+            } catch (error) {
+                songPlaying = false;
+                songButton.setAttribute('aria-pressed', 'false');
+                songButton.textContent = '♫ Play birthday song';
+                status.textContent = 'Could not play audio. Please check your browser settings.';
+                console.error('Birthday song playback failed:', error);
+            }
+        }
+
+        function stopSong() {
+            songTimers.forEach(clearTimeout);
+            songTimers = [];
+            songPlaying = false;
+            if (audioContext) {
+                audioContext.close().catch((error) => {
+                    console.error('Could not stop birthday song audio:', error);
+                });
+                audioContext = undefined;
+            }
+            songButton.setAttribute('aria-pressed', 'false');
+            songButton.textContent = '♫ Play birthday song';
+            status.textContent = 'Song stopped. Ready for another round?';
+        }
+
+        songButton.addEventListener('click', () => {
+            if (songPlaying) {
+                stopSong();
+            } else {
+                startSong();
+            }
+        });
+    </script>
+</body>
+</html>
